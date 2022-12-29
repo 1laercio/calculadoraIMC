@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,17 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
   final controllerAltura = TextEditingController();
   double peso = 0;
   double altura = 0;
-  String? imc;
+  List<String> imc = [];
   String resulttext = "";
-
-  /*  @override
+  
+  @override
   void initState() {
     super.initState();
-
-    // Start listening to changes.
-    controllerAltura.addListener(_incrementCounter);
-    controllerPeso.addListener(_incrementCounter);
-  } */
+    _imc();
+  }
 
   @override
   void dispose() {
@@ -74,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void _incrementCounter() {
+  Future<void> _incrementCounter() async {
+    final prefs = await SharedPreferences.getInstance();
     altura = double.parse(controllerAltura.text);
     peso = double.parse(controllerPeso.text);
     result = peso / (altura * altura);
@@ -105,6 +104,16 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       result;
       resulttext;
+      prefs.setStringList('imc2', [resulttext].toList());
+    });
+  }
+
+  Future<void> _imc() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      imc = prefs.getStringList('imc2')!.toList();
+      print("imc");
+      print(imc);
     });
   }
 
@@ -126,118 +135,141 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextFormField(
-                controller: controllerPeso,
-                decoration: InputDecoration(
-                  labelText: "Peso",
-                  hintText: "Peso",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFFDBE2E7),
-                      width: 2,
+            // Column is also a layout widget. It takes a list of children and
+            // arranges them vertically. By default, it sizes itself to fit its
+            // children horizontally, and tries to be as tall as its parent.
+            //
+            // Invoke "debug painting" (press "p" in the console, choose the
+            // "Toggle Debug Paint" action from the Flutter Inspector in Android
+            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+            // to see the wireframe for each widget.
+            //
+            // Column has various properties to control how it sizes itself and
+            // how it positions its children. Here we use mainAxisAlignment to
+            // center the children vertically; the main axis here is the vertical
+            // axis because Columns are vertical (the cross axis would be
+            // horizontal).
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  controller: controllerPeso,
+                  decoration: InputDecoration(
+                    labelText: "Peso",
+                    hintText: "Peso",
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFFDBE2E7),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFFDBE2E7),
-                      width: 2,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFFDBE2E7),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0x00000000),
-                      width: 2,
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0x00000000),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0x00000000),
-                      width: 2,
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0x00000000),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 24, 0, 24),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      const EdgeInsetsDirectional.fromSTEB(16, 24, 0, 24),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextFormField(
-                controller: controllerAltura,
-                decoration: InputDecoration(
-                  labelText: "Altura",
-                  hintText: "Altura",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFFDBE2E7),
-                      width: 2,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  controller: controllerAltura,
+                  decoration: InputDecoration(
+                    labelText: "Altura",
+                    hintText: "Altura",
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFFDBE2E7),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFFDBE2E7),
-                      width: 2,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFFDBE2E7),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0x00000000),
-                      width: 2,
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0x00000000),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0x00000000),
-                      width: 2,
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0x00000000),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 24, 0, 24),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      const EdgeInsetsDirectional.fromSTEB(16, 24, 0, 24),
                 ),
               ),
-            ),
-            Text(
-              '$result',
+              Text(
+                '$result',
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              Text(
+                resulttext,
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              /*  Text(
+              imc,
               style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resulttext,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            TextButton(
-                onPressed: _incrementCounter, child: const Text("Calcular"))
-          ],
-        ),
+            ), */
+              TextButton(
+                  onPressed: () {
+                    _incrementCounter();
+                    _imc();
+                  },
+                  child: const Text("Calcular")),
+              imc.isNotEmpty
+                  ? ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(8),
+                      itemCount: imc.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 50,
+                          width: 200,
+                          color: Colors.amber,
+                          child:
+                              Center(child: Text('Faixa IMC: ${imc[index]}')),
+                        );
+                      })
+                  : const Text("Sem Historico")
+            ]),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
